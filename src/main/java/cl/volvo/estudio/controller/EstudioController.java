@@ -17,8 +17,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Slf4j
 @RestController
@@ -34,6 +36,7 @@ public class EstudioController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Estudio creado exitosamente",
             content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = EstudioResponseDTO.class),
             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"nombre\": \"Naughty Dog\",\n  \"paisOrigen\": \"Estados Unidos\",\n  \"anoFundacion\": 1984\n}"))),
         @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o petición incorrecta", content = @Content)
     })
@@ -49,12 +52,17 @@ public class EstudioController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de estudios obtenida con éxito",
             content = @Content(mediaType = "application/json",
-            examples = @ExampleObject(value = "[\n  {\n    \"id\": 1,\n    \"nombre\": \"Naughty Dog\",\n    \"paisOrigen\": \"Estados Unidos\"\n  }\n]")))
+            array = @ArraySchema(schema = @Schema(implementation = EstudioResponseDTO.class)),
+            examples = @ExampleObject(value = "[\n  {\n    \"id\": 1,\n    \"nombre\": \"Naughty Dog\",\n    \"paisOrigen\": \"Estados Unidos\"\n  }\n]"))),
+        @ApiResponse(responseCode = "204", description = "No hay estudios registrados en la base de datos", content = @Content)
     })
     @GetMapping
     public ResponseEntity<List<EstudioResponseDTO>> obtenerTodos() {
         log.info("Petición REST recibida para listar estudios");
         List<EstudioResponseDTO> estudios = estudioService.obtenerTodos();
+        if (estudios.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(estudios);
     }
 
@@ -63,6 +71,7 @@ public class EstudioController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Estudio encontrado exitosamente",
             content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = EstudioResponseDTO.class),
             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"nombre\": \"Naughty Dog\",\n  \"paisOrigen\": \"Estados Unidos\"\n}"))),
         @ApiResponse(responseCode = "404", description = "El estudio con el ID proporcionado no existe", content = @Content)
     })
@@ -78,6 +87,7 @@ public class EstudioController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Estudio actualizado de forma exitosa",
             content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = EstudioResponseDTO.class),
             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"nombre\": \"Naughty Dog Actualizado\",\n  \"paisOrigen\": \"Estados Unidos\"\n}"))),
         @ApiResponse(responseCode = "404", description = "No se pudo actualizar porque el estudio no existe", content = @Content),
         @ApiResponse(responseCode = "400", description = "Datos de actualización inválidos", content = @Content)
