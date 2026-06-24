@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: estudio
+  profiles:
+    active: dev
+
+# Configuración de Swagger / OpenAPI con ordenamiento alfabético
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
